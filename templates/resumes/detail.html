@@ -1,0 +1,6 @@
+{% extends 'base.html' %}{% block content %}<section class="card p-4"><p class="eyebrow">Resume processing</p><h1 class="h3">{{ resume.original_filename }}</h1><p>Status: <strong>{{ resume.get_parsing_status_display }}</strong></p><p class="muted">Uploaded {{ resume.uploaded_at }}</p>
+{% if resume.parsing_error %}<div class="alert alert-danger" role="alert">{{ resume.parsing_error }}</div>{% endif %}
+{% if resume.parsing_status == 'PARSED' %}<p>The profile is ready for review. Previously confirmed details have been preserved.</p><p>Onboarding email: {{ resume.get_email_status_display }}</p>{% if resume.email_error %}<div class="alert alert-warning">{{ resume.email_error }}</div>{% endif %}{% endif %}
+<div class="d-flex gap-2 flex-wrap"><a class="btn btn-outline-primary" href="{% url 'resume_download' resume.pk %}">Download PDF</a>
+{% if resume.parsing_status == 'FAILED' %}<form method="post" action="{% url 'resume_retry' resume.pk %}">{% csrf_token %}<button class="btn btn-primary">Retry parsing</button></form>{% endif %}
+{% if can_manage and resume.parsing_status == 'PARSED' %}<form method="post" action="{% url 'resume_email' resume.pk %}">{% csrf_token %}<button class="btn btn-outline-primary">Resend login information</button></form>{% endif %}</div></section>{% endblock %}

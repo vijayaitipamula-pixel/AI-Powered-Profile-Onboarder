@@ -1,0 +1,8 @@
+Your candidate profile is ready for review.
+Sign in: {{ login_url }}
+Email: {{ user.email }}
+{% if temporary_password %}Temporary password: {{ temporary_password }}
+This password expires in {{ hours }} hours. You must change it after signing in.
+{% else %}Use your existing password. If needed, choose a new password here: {{ reset_url }}
+{% endif %}Please review and correct the extracted details. Missing information is left blank.
+If your temporary password expired, request a reset: {{ reset_url }}

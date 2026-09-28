@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Profile Onboarder{% endblock %}</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+<style>
+body{background:#f4f7fb;color:#19283b} .navbar{background:#152f4d} .navbar a{color:#fff} main{max-width:1120px}
+.card{border:1px solid #e1e7ef;border-radius:14px;box-shadow:0 3px 16px #20364b08} .muted{color:#596a7e}
+.eyebrow{text-transform:uppercase;letter-spacing:.12em;font-size:.8rem;color:#376788;font-weight:700}
+input:not([type=checkbox]):not([type=hidden]),select,textarea{display:block;width:100%;padding:.6rem;border:1px solid #9aaaba;border-radius:.4rem}
+input[type=checkbox]{margin-right:.5rem} label{font-weight:600;margin-bottom:.35rem} .helptext{display:block;font-size:.85rem;color:#596a7e}
+.errorlist{color:#a72232} .form-card{max-width:580px;margin:auto} .btn-primary{background:#225e96;border-color:#225e96}
+dd{overflow-wrap:anywhere} .skill{background:#e8f0f8;color:#21547e;display:inline-block;padding:.35rem .65rem;border-radius:20px;margin:.2rem}
+</style></head><body>
+<nav class="navbar navbar-dark mb-4"><div class="container d-flex gap-3 flex-wrap py-2">
+<a class="navbar-brand fw-semibold" href="{% url 'dashboard' %}">Profile Onboarder</a>
+{% if user.is_authenticated %}<div class="d-flex flex-wrap align-items-center gap-3">
+<a href="{% url 'dashboard' %}">Dashboard</a><a href="{% url 'job_list' %}">Jobs</a><a href="{% url 'my_applications' %}">My applications</a>
+{% if user.is_staff %}<a href="{% url 'admin:index' %}">Admin</a>{% endif %}
+<a href="{% url 'password_change' %}">Password</a><form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="btn btn-sm btn-outline-light">Sign out</button></form>
+</div>{% endif %}</div></nav>
+<main class="container pb-5">{% for message in messages %}<div role="status" class="alert alert-info">{{ message }}</div>{% endfor %}{% block content %}{% endblock %}</main>
+<footer class="container small muted py-4 border-top">Your experience, ready for the next opportunity.</footer>
+{% block scripts %}{% endblock %}</body></html>
