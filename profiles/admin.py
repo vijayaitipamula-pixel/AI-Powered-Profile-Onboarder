@@ -5,6 +5,23 @@ from .models import Award, Certification, JobSeekerProfile, Project, Score, Skil
 from .services import change_status, refresh_profile
 
 
+class ScoreRangeFilter(admin.SimpleListFilter):
+    title = 'profile score'
+    parameter_name = 'score_range'
+
+    def lookups(self, request, model_admin):
+        return [('high', '80–100'), ('medium', '50–79'), ('low', '0–49')]
+
+    def queryset(self, request, queryset):
+        if self.value() == 'high':
+            return queryset.filter(score__total_score__gte=80)
+        if self.value() == 'medium':
+            return queryset.filter(score__total_score__gte=50, score__total_score__lt=80)
+        if self.value() == 'low':
+            return queryset.filter(models.Q(score__total_score__lt=50) | models.Q(score__isnull=True))
+        return queryset
+
+
 @admin.register(User)
 class AccountAdmin(UserAdmin):
     fieldsets = UserAdmin.fieldsets + (('Onboarding', {'fields': ('must_change_password', 'temporary_password_expires_at')}),)
@@ -38,7 +55,7 @@ class HistoryInline(admin.TabularInline):
 @admin.register(JobSeekerProfile)
 class ProfileAdmin(admin.ModelAdmin):
     list_display = ('full_name', 'candidate_email', 'profile_status', 'experience_type', 'experience_years', 'score_value')
-    list_filter = ('profile_status', 'experience_type', 'skills')
+    list_filter = ('profile_status', 'experience_type', ScoreRangeFilter, 'skills')
     search_fields = ('first_name', 'last_name', 'user__email', 'skills__name', 'current_role')
     readonly_fields = ('user', 'profile_status', 'masked_aadhaar', 'confirmed_at', 'created_at', 'updated_at')
     exclude = ('aadhaar_last_four',)

@@ -14,14 +14,20 @@ def calculate_score(profile):
     experience = (1 if profile.experience_type == 'Fresher' else
                   sum(bool(v) for v in [profile.experience_type, profile.experience_years is not None,
                                        profile.current_role, profile.experience_summary]) / 4)
+    projects = list(profile.projects.all())
+    project_quality = sum(
+        (bool(project.description) + bool(project.role) + bool(project.activities)) / 3
+        for project in projects[:2]
+    ) / 2
     fractions = {'personal': personal, 'experience': experience,
-        'skills': min(profile.skills.count() / 3, 1), 'projects': min(profile.projects.count() / 2, 1),
+        'skills': min(profile.skills.count() / 3, 1), 'projects': project_quality,
         'credentials': int(profile.certifications.exists() or profile.awards.exists()),
         'preferred_role': int(bool(profile.preferred_role)), 'preferred_city': int(bool(profile.preferred_city))}
     components = {key: round(WEIGHTS[key] * value) for key, value in fractions.items()}
     hints = {'personal': 'Add your name, phone and current city.',
         'experience': 'Specify fresher status or complete your experience details.',
-        'skills': 'Add up to three relevant skills.', 'projects': 'Describe up to two projects, if applicable.',
+        'skills': 'Add at least three skills relevant to your preferred role.',
+        'projects': 'Add details, your role and activities for up to two projects.',
         'credentials': 'Add certifications or awards, if applicable.',
         'preferred_role': 'Add your preferred role.', 'preferred_city': 'Add your preferred location.'}
     suggestions = [hints[key] for key, value in fractions.items() if value < 1]
